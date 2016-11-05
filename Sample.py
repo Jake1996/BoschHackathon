@@ -9,8 +9,7 @@ from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
 class SampleListener(Leap.Listener):
     state_names = ['STATE_INVALID', 'STATE_START', 'STATE_UPDATE', 'STATE_END']
-    
-    
+
     def on_init(self, controller):
         pass
     def on_connect(self, controller):
@@ -70,7 +69,7 @@ class SampleListener(Leap.Listener):
                 a=30
             b = math.degrees(math.atan((y3-y2)/(z2-z3)))
             br=math.degrees(math.atan(-(arm.direction[0]/arm.direction[2])*1.2)) + 90
-            data = "m " +str(int(a))+"\n"+ "o " +str(int(b-a)+120)+"\n"+"l " +str(int(br)) + "\n" + "p " + str(int(p))
+            data = "m " +str(int(a))+"\n"+ "o " +str(int(b-a)+120)+"\n"+"l " +str(int(br)) + "\n" + "p " + str(int(p))+"\n"
             s.send(data.encode('utf-8'))
             time.sleep(0.3)
        
