@@ -20,7 +20,7 @@ void setup()
   pinMode(3,OUTPUT);
   pinMode(4,OUTPUT);
   pinMode(5,OUTPUT);
-  lServo.attach(6);
+  lServo.attach(6); 
   mServo.attach(7);
   nServo.attach(8);
   oServo.attach(9);
@@ -153,7 +153,7 @@ void loop()
   }
  
 
-  }
+   }
 }
 void forward()
 {
