@@ -5,17 +5,13 @@ Servo nServo;
 Servo oServo;
 Servo pServo;
 boolean recording = false;
-
 int recordingVar;
-
-
 void setup()
 {
   recordingVar = 0;
   recording =false;
   Serial.begin(9600);
-
-  
+ 
   pinMode(2,OUTPUT);
   pinMode(3,OUTPUT);
   pinMode(4,OUTPUT);
@@ -32,8 +28,6 @@ void setup()
   oServo.write(90);
   pServo.write(90);
 
-  
-  
 }
 void loop()
 {
@@ -48,113 +42,118 @@ void loop()
   if(Serial.available() > 0)
   {
     c=Serial.read();
-    
-  if(c=='w')
-  {
-    if(recording)
-    Serial.println("w");
-    forward();
-  }
-
-  else if(c=='s')
-
-  {
-    if(recording)
-    Serial.println("s");
-    backward();
-  }
-
-  else if(c=='a')
-
-  {
-    if(recording)
-   Serial.println("a");
-   leftward();
-  }
-
-  else if(c=='d')
-  {
-    if(recording)
-    Serial.println("d");
-    rightward();
-  }
-
-  else if(c=='l')
-  {
-    int x = Serial.parseInt();
-    if(recording)
+    if(c=='t')
     {
-    Serial.print("l ");
-    Serial.println(x);
+      recording = true;
     }
-    if(lvar>x) dir = -1;
-    else dir = 1;
-    while(lvar!=x)
+    else if(c=='f')
     {
-      lvar = lvar+dir;
-      lServo.write(lvar);
-      delay(15);
+      recording = false;
     }
-    
-  }
-  else if(c=='m')
-  {
-    int x = Serial.parseInt();
-    if(recording)
+    else if(c=='w')
     {
-    Serial.print("m ");
-    Serial.println(x);
+      if(recording)
+        Serial.println("w");
+      forward();
     }
-    if(mvar>x) dir = -1;
-    else dir = 1;
-    while(mvar!=x)
+
+    else if(c=='s')
     {
-      mvar = mvar+dir;
-      mServo.write(mvar);
-      nServo.write(180-mvar);
-      delay(15);
+      if(recording)
+        Serial.println("s");
+      backward();
     }
-  }
-  
-  else if(c=='o')
-  {
-    int x = Serial.parseInt();
-    if(recording)
+    else if(c=='a')
     {
-    Serial.print("o ");
-    Serial.println(x);
+      if(recording)
+        Serial.println("a");
+      leftward();
     }
-    if(ovar>x) dir = -1;
-    else dir = 1;
-    while(ovar!=x)
+
+    else if(c=='d')
     {
-        ovar +=dir;
-        oServo.write(ovar);
+      if(recording)
+        Serial.println("d");
+      rightward();
+    }
+
+    else if(c=='l')
+    {
+      int x = Serial.parseInt();
+      if(recording)
+      {
+        Serial.print("l ");
+        Serial.println(x);
+      }
+      if(lvar>x)
+        dir = -1;
+      else
+        dir = 1;
+      while(lvar!=x)
+      {
+        lvar = lvar+dir;
+        lServo.write(lvar);
         delay(15);
+      }
     }
-  }
-  else if(c=='p')
-  {
-   int x = Serial.parseInt();
-   if(recording)
-   {
-    Serial.print("p ");
-    Serial.println(x);
-   }
-    if(pvar>x) dir=-1;
-    else dir =1;
-    while(pvar!=x)
+    else if(c=='m')
     {
-      pvar+=dir;
-      pServo.write(pvar);
-      delay(15);
+      int x = Serial.parseInt();
+      if(recording)
+      {
+        Serial.print("m ");
+        Serial.println(x);
+      }
+      if(mvar>x)
+        dir = -1;
+      else
+        dir = 1;
+      while(mvar!=x)
+      {
+        mvar = mvar+dir;
+        mServo.write(mvar);
+        nServo.write(180-mvar);
+        delay(15);
+      }
     }
-
+  
+    else if(c=='o')
+    {
+      int x = Serial.parseInt();
+      if(recording)
+      {
+        Serial.print("o ");
+        Serial.println(x);
+      }
+      if(ovar>x) dir = -1;
+      else dir = 1;
+      while(ovar!=x)
+      {
+          ovar +=dir;
+          oServo.write(ovar);
+          delay(15);
+      }
+    }
+    else if(c=='p')
+    {
+     int x = Serial.parseInt();
+     if(recording)
+     {
+        Serial.print("p ");
+        Serial.println(x);
+     }
+      if(pvar>x) dir=-1;
+      else dir =1;
+      while(pvar!=x)
+      {
+        pvar+=dir;
+        pServo.write(pvar);
+        delay(15);
+      }
+    }
   }
- 
-
-   }
 }
+
 void forward()
 {
   digitalWrite(2,HIGH);
