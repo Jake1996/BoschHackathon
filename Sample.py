@@ -1,11 +1,47 @@
 import sys
 import math
 import socket
-#//sys.path.append("usr/lib/Leap:/path/to/lib/x86:/path/to/lib")
-sys.path.append("C:/Program Files\ (x86)/Leap Motion")
+import os
 import Leap, sys, thread, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
+from threading import Thread
+sys.path.append("C:/Program Files\ (x86)/Leap Motion")
 
+class _Getch:
+    """Gets a single character from standard input.  Does not echo to the screen."""
+    def __init__(self):
+        try:
+            self.impl = _GetchWindows()
+        except ImportError:
+            self.impl = _GetchUnix()
+
+    def __call__(self):
+		while True :
+			foo(self.impl())
+
+class _GetchUnix:
+    def __init__(self):
+        import tty, sys
+
+    def __call__(self):
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        print type(ch)
+        return ch
+
+class _GetchWindows:
+    def __init__(self):
+        import msvcrt
+
+    def __call__(self):
+        import msvcrt
+        return msvcrt.getch()
 
 class SampleListener(Leap.Listener):
     state_names = ['STATE_INVALID', 'STATE_START', 'STATE_UPDATE', 'STATE_END']
@@ -69,9 +105,22 @@ class SampleListener(Leap.Listener):
                 a=30
             b = math.degrees(math.atan((y3-y2)/(z2-z3)))
             br=math.degrees(math.atan(-(arm.direction[0]/arm.direction[2])*1.2)) + 90
-            data = "m " +str(int(a))+"\n"+ "o " +str(int(b-a)+120)+"\n"+"l " +str(int(br)) + "\n" + "p " + str(int(p))+"\n"
-            s.send(data.encode('utf-8'))
-            time.sleep(0.3)
+            
+            p = int(p)     #claw angle
+            p = p*0.66
+            p = 180 - p
+
+            a = a - 30     #ankle angle
+            a = a*1.2
+
+            br = 180-br    # base rotation
+
+            data = "m " +str(int(a))+"\n"+ "o " +str(int((int(b-a)+70)*2))+"\n"+"l " +str(int(br)) + "\n" + "p " + str(int(p))+"\n"
+            #o = ((b-a)+90)
+
+            # print data
+            sender(data)
+            time.sleep(0.25)
        
         if not (frame.hands.is_empty and frame.gestures().is_empty):
             print ""
@@ -88,8 +137,37 @@ class SampleListener(Leap.Listener):
 
         if state == Leap.Gesture.STATE_INVALID:
             return "STATE_INVALID"
+s = socket.socket()
+s.connect((str(sys.argv[1]), int(sys.argv[2])))
+controller = ""
+listener = ""
+var = True
+file_name = "record.txt"
+#raw_input('enter filename to save into :') + ".txt"
+f = open(file_name,'w')
+def foo(n):
+    global controller
+    global listener
+    if n=="q" :
+        s.close()
+        global var
+        var = False
+        controller.remove_listener(listener)
+        sys.exit()
+    sender(n+"\n")
+    print n
 
+def sender(data) :
+    global s
+    global f
+    print data
+    s.send(data.encode('utf-8'))
+    f.write(data)
 def main():
+    global controller
+    global listener
+    t = Thread(target=getch)
+    t.start()
     # Create a sample listener and controller
     listener = SampleListener()
     controller = Leap.Controller()
@@ -98,18 +176,10 @@ def main():
     controller.add_listener(listener)
 
     # Keep this process running until Enter is pressed
-    print "Press Enter to quit..."
-    try:
-        sys.stdin.readline()
-    except KeyboardInterrupt:
+    print "Press q to quit"
+    global var
+    while var:
         pass
-    finally:
-        # Remove the sample listener when done
-        controller.remove_listener(listener)
-
-
+getch = _Getch()
 if __name__ == "__main__":
-    s = socket.socket()
-    s.connect((str(sys.argv[1]), int(sys.argv[2])))
     main()
-    s.close()

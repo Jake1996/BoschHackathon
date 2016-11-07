@@ -1,4 +1,5 @@
 #include <Servo.h>
+Servo kServo;
 Servo lServo;
 Servo mServo;
 Servo nServo;
@@ -16,12 +17,14 @@ void setup()
   pinMode(3,OUTPUT);
   pinMode(4,OUTPUT);
   pinMode(5,OUTPUT);
+  kServo.attach(5);
   lServo.attach(6); 
   mServo.attach(7);
   nServo.attach(8);
   oServo.attach(9);
   pServo.attach(10);
-  
+
+  kServo.write(90);
   lServo.write(90);
   mServo.write(90);
   nServo.write(90);
@@ -31,11 +34,11 @@ void setup()
 }
 void loop()
 {
-  
+  static int kvar=90;
   static int lvar=90;
   static int mvar=90;
   static int ovar=90;
-  static int pvar=90;
+  static int pvar=170;
   
   int dir;
   char c;
@@ -89,7 +92,7 @@ void loop()
         dir = -1;
       else
         dir = 1;
-      while(lvar!=x)
+      while(lvar!=x)   //while(lvar-x)
       {
         lvar = lvar+dir;
         lServo.write(lvar);
@@ -117,10 +120,12 @@ void loop()
       }
     }
   
-    else if(c=='o')
+    /*else if(c=='o')
     {
       int x = Serial.parseInt();
       if(recording)
+
+      
       {
         Serial.print("o ");
         Serial.println(x);
@@ -133,7 +138,18 @@ void loop()
           oServo.write(ovar);
           delay(15);
       }
+    }*/
+    else if(c=='o')
+    {
+      int x = Serial.parseInt();
+      if(recording)
+      {
+        Serial.print("o ");
+        Serial.println(x);
+        }  
+      oServo.write(x);
     }
+    
     else if(c=='p')
     {
      int x = Serial.parseInt();
@@ -151,6 +167,23 @@ void loop()
         delay(15);
       }
     }
+    else if(c=='k')
+    {
+      int x = Serial.parseInt();
+      if(recording)
+      {
+        Serial.print("k ");
+        Serial.println(x);
+        }
+       if(kvar > x) dir=-1;
+       else dir =1;
+       while(kvar!=x)
+       {
+        kvar+=dir;
+        kServo.write(kvar);
+        delay(15);
+        } 
+      }
   }
 }
 
